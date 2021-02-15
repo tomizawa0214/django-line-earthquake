@@ -1,15 +1,10 @@
-from pathlib import Path
-import environ
+import os
+import django_heroku
 
 
-env = environ.Env()
-env.read_env('.env')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = env('SECRET_KEY')
-
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -56,7 +51,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -86,3 +81,10 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+
+django_heroku.settings(locals())
+
+if not DEBUG:
+    import django_heroku
+    django_heroku.settings(locals())
+    SECRET_KEY = os.environ['SECRET_KEY']
